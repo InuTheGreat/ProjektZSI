@@ -8,6 +8,7 @@ from backend.infrastructure.mappers.lizard_vote_candidate_mapper import (
     LizardVoteCandidateMapper,
 )
 
+from sqlalchemy.orm import joinedload
 
 class LizardVoteRepository:
 
@@ -32,6 +33,7 @@ class LizardVoteRepository:
     def get_candidates(self, vote_id: str):
         models = (
             self.db_session.query(LizardVoteCandidateModel)
+            .options(joinedload(LizardVoteCandidateModel.species))
             .filter(LizardVoteCandidateModel.vote_id == vote_id)
             .all()
         )

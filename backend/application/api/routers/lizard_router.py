@@ -35,8 +35,6 @@ def create_lizard(
 
     lizard = service.create_lizard(request)
 
-    uow.commit()
-
     return lizard
 
 @router.get("/search")

@@ -19,9 +19,9 @@ class LizardVoteCandidateModel(Base):
         nullable=False,
     )
 
-    lizard_id = Column(
+    species_id = Column(
         String(36),
-        ForeignKey("lizards.id"),
+        ForeignKey("species.id"),
         nullable=False,
     )
 
@@ -36,6 +36,6 @@ class LizardVoteCandidateModel(Base):
         back_populates="candidates",
     )
 
-    lizard = relationship(
-        "LizardModel",
+    species = relationship(
+        "SpeciesModel",
     )

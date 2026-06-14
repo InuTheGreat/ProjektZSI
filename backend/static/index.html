@@ -4,32 +4,477 @@
   <meta charset="UTF-8">
   <title>Głosowanie na jaszczurki</title>
   <style>
-    body { font-family: sans-serif; margin: 80px auto; text-align: center; }
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f5f5f5;
+      margin: 40px auto;
+      text-align: center;
+    }
+
+    input {
+      padding: 8px;
+      margin: 4px;
+    }
+
+    button {
+      padding: 8px 14px;
+    }
+
     button { padding: 12px 24px; margin: 8px; font-size: 16px; cursor: pointer; }
   </style>
 </head>
 <body>
   <h1>🦎🇵🇱 Głosuj na twoją ulubioną polską jaszczurkę!🇵🇱🦎</h1>
+  <div style="margin-bottom:20px;">
+  <input
+    type="text"
+    id="search"
+    placeholder="Wpisz nazwę gatunku..."
+    style="padding:8px; width:250px;"
+  >
+  <button onclick="load()">Pokaż wszystkie</button>
+  <button onclick="showAddForm()">Dodaj gatunek</button>
+  <button onclick="sortSpecies()">Sortuj A-Z</button>
+  <button onclick="showVote('307d9ba0-7587-4f76-8a75-2f71c4cfeff5')">
+  Otwórz głosowanie
+  </button>
+</div>
+
+  <p id="species-count"></p>
+
+<div>
+  <button onclick="prevPage()">⬅</button>
+  <span id="page-info"></span>
+  <button onclick="nextPage()">➡</button>
+</div>
+
   <div id="lizards"></div>
+<script>
+  let allSpecies = [];
+  let currentPage = 1;
+  let limit = 5;
+  let currentVote = null;
 
-  <script>
-    async function load() {
-      const res = await fetch('/api/lizards');
-      const lizards = await res.json();
-      document.getElementById('lizards').innerHTML = lizards.map(l => `
-        <div>
-          <button onclick="vote(${l.id})">${l.name}</button>
-          <span>${l.votes} głosów</span>
-        </div>
-      `).join('');
+async function load() {
+  currentPage = 1;
+
+  document.getElementById('lizards').innerHTML = 'Ładowanie...';
+
+  try {
+    const res = await fetch(
+      `http://localhost:8001/species?page=${currentPage}&limit=${limit}`
+    );
+
+    const species = await res.json();
+    allSpecies = species;
+
+    renderSpecies(species);
+
+    document.getElementById('species-count').innerText =
+      `Liczba gatunków: ${species.length}`;
+
+    document.getElementById('page-info').innerText =
+      `Strona ${currentPage}`;
+
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+function renderSpecies(species) {
+  document.getElementById('lizards').innerHTML = species.map(s => `
+    <div style="
+  margin:15px auto;
+  padding:20px;
+  border:1px solid #ddd;
+  border-radius:12px;
+  max-width:500px;
+  box-shadow:0 2px 8px rgba(0,0,0,0.1);
+">
+      <h3>${s.common_name}</h3>
+      <p><i>${s.scientific_name}</i></p>
+      <button onclick="showDetails('${s.id}')">
+        Szczegóły
+      </button>
+    </div>
+  `).join('');
+}
+
+function searchSpecies() {
+  const phrase = document
+    .getElementById('search')
+    .value
+    .toLowerCase()
+    .trim();
+
+  const filtered = allSpecies.filter(s =>
+    s.common_name.toLowerCase().includes(phrase) ||
+    s.scientific_name.toLowerCase().includes(phrase)
+  );
+
+  if (filtered.length === 0) {
+    document.getElementById('lizards').innerHTML =
+      '<p>Nie znaleziono pasujących gatunków.</p>';
+    return;
+  }
+
+  renderSpecies(filtered);
+}
+
+function sortSpecies() {
+
+  const sorted = [...allSpecies];
+
+  sorted.sort((a, b) =>
+    a.common_name.localeCompare(b.common_name)
+  );
+
+  renderSpecies(sorted);
+}
+
+function showAddForm() {
+  document.getElementById('lizards').innerHTML = `
+    <h2>Dodaj nowy gatunek</h2>
+
+    <input id="common_name" placeholder="Nazwa zwyczajowa"><br><br>
+
+    <input id="scientific_name" placeholder="Nazwa naukowa"><br><br>
+
+    <input id="family" placeholder="Rodzina"><br><br>
+
+    <input id="genus" placeholder="Rodzaj"><br><br>
+
+    <input id="distribution" placeholder="Występowanie"><br><br>
+
+    <input id="habitat" placeholder="Siedlisko"><br><br>
+
+    <input id="max_length_cm" placeholder="Maksymalna długość (cm)"><br><br>
+
+    <input id="max_weight_g" placeholder="Maksymalna waga (g)"><br><br>
+
+    <input id="diet" placeholder="Dieta"><br><br>
+
+    <button onclick="addSpecies()">Zapisz</button>
+    <button onclick="load()">Anuluj</button>
+  `;
+}
+
+async function addSpecies() {
+  const body = {
+  common_name: document.getElementById('common_name').value,
+  scientific_name: document.getElementById('scientific_name').value,
+  family: document.getElementById('family').value,
+  genus: document.getElementById('genus').value,
+  distribution: document.getElementById('distribution').value,
+  habitat: document.getElementById('habitat').value,
+  max_length_cm: document.getElementById('max_length_cm').value,
+  max_weight_g: document.getElementById('max_weight_g').value,
+  diet: document.getElementById('diet').value
+};
+
+if (!body.common_name || !body.scientific_name) {
+  alert('Nazwa zwyczajowa i naukowa są wymagane.');
+  return;
+}
+
+  const res = await fetch(
+    'http://localhost:8001/species',
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(body)
+    }
+  );
+
+  if (!res.ok) {
+    alert('Nie udało się dodać gatunku');
+    return;
+  }
+
+  alert('Gatunek został dodany');
+
+  load();
+}
+
+async function showDetails(id) {
+  try {
+    const res = await fetch(`http://localhost:8001/species/${id}`);
+
+    if (!res.ok) {
+      document.getElementById('species-count').innerText = '';
+      document.getElementById('lizards').innerHTML =
+        '<p>Nie znaleziono gatunku.</p>';
+      return;
     }
 
-    async function vote(id) {
-      await fetch('/api/vote/' + id, { method: 'POST' });
-      load();
+    const s = await res.json();
+
+    document.getElementById('lizards').innerHTML = `
+  <h2>${s.common_name}</h2>
+
+  <p><strong>Nazwa naukowa:</strong> ${s.scientific_name}</p>
+  <p><strong>Rodzina:</strong> ${s.family ?? '-'}</p>
+  <p><strong>Rodzaj:</strong> ${s.genus ?? '-'}</p>
+  <p><strong>Występowanie:</strong> ${s.distribution ?? '-'}</p>
+  <p><strong>Siedlisko:</strong> ${s.habitat ?? '-'}</p>
+  <p><strong>Maks. długość:</strong> ${s.max_length_cm ?? '-'} cm</p>
+  <p><strong>Maks. waga:</strong> ${s.max_weight_g ?? '-'} g</p>
+  <p><strong>Dieta:</strong> ${s.diet ?? '-'}</p>
+
+  <button onclick="load()">
+    Powrót do listy
+  </button>
+
+  <button onclick="showEditForm('${s.id}')">
+  Edytuj gatunek
+  </button>
+
+  <button onclick="deleteSpecies('${s.id}')">
+    Usuń gatunek
+  </button>
+`;
+
+  } catch (error) {
+    document.getElementById('lizards').innerHTML =
+      '<p>Błąd połączenia z serwerem.</p>';
+
+    console.error(error);
+  }
+}
+
+async function showEditForm(id) {
+
+  const res = await fetch(
+    `http://localhost:8001/species/${id}`
+  );
+
+  const s = await res.json();
+
+  document.getElementById('lizards').innerHTML = `
+    <h2>Edycja gatunku</h2>
+
+    <input id="edit-common-name"
+      value="${s.common_name}">
+    <br><br>
+
+    <input id="edit-scientific-name"
+      value="${s.scientific_name}">
+    <br><br>
+
+    <input id="edit-family"
+      value="${s.family ?? ''}">
+    <br><br>
+
+    <input id="edit-genus"
+      value="${s.genus ?? ''}">
+    <br><br>
+
+    <input id="edit-distribution"
+      value="${s.distribution ?? ''}"
+      placeholder="Występowanie">
+    <br><br>
+
+    <input id="edit-habitat"
+      value="${s.habitat ?? ''}"
+      placeholder="Siedlisko">
+    <br><br>
+
+    <input id="edit-max-length"
+      value="${s.max_length_cm ?? ''}"
+      placeholder="Maks. długość">
+    <br><br>
+
+    <input id="edit-max-weight"
+      value="${s.max_weight_g ?? ''}"
+      placeholder="Maks. waga">
+    <br><br>
+
+    <input id="edit-diet"
+      value="${s.diet ?? ''}"
+      placeholder="Dieta">
+    <br><br>
+
+    <button onclick="saveSpecies('${s.id}')">
+      Zapisz
+    </button>
+
+    <button onclick="showDetails('${s.id}')">
+      Anuluj
+    </button>
+  `;
+}
+
+async function saveSpecies(id) {
+
+  const body = {
+    common_name:
+      document.getElementById('edit-common-name').value,
+
+    scientific_name:
+      document.getElementById('edit-scientific-name').value,
+
+    family:
+      document.getElementById('edit-family').value,
+
+    genus:
+      document.getElementById('edit-genus').value,
+
+    distribution:
+      document.getElementById('edit-distribution').value,
+
+    habitat:
+      document.getElementById('edit-habitat').value,
+
+    max_length_cm:
+      document.getElementById('edit-max-length').value,
+
+    max_weight_g:
+      document.getElementById('edit-max-weight').value,
+
+    diet:
+      document.getElementById('edit-diet').value
+    };
+
+  const res = await fetch(
+    `http://localhost:8001/species/${id}`,
+    {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(body)
     }
+  );
+
+  if (!res.ok) {
+    alert('Nie udało się zapisać zmian');
+    return;
+  }
+
+  alert('Zmiany zapisane');
+
+  showDetails(id);
+}
+
+async function deleteSpecies(id) {
+
+  const confirmed = confirm(
+    'Czy na pewno chcesz usunąć ten gatunek?'
+  );
+
+  if (!confirmed) {
+    return;
+  }
+
+  try {
+    const res = await fetch(
+      `http://localhost:8001/species/${id}`,
+      {
+        method: 'DELETE'
+      }
+    );
+
+    if (!res.ok) {
+      alert('Nie udało się usunąć gatunku');
+      return;
+    }
+
+    alert('Gatunek został usunięty');
 
     load();
-  </script>
+
+  } catch (error) {
+    alert('Błąd połączenia z serwerem');
+    console.error(error);
+  }
+}
+
+let timeout;
+
+document.getElementById('search').addEventListener('input', () => {
+  clearTimeout(timeout);
+  timeout = setTimeout(searchSpecies, 200);
+});
+
+function nextPage() {
+  currentPage++;
+  load();
+}
+
+function prevPage() {
+  if (currentPage > 1) {
+    currentPage--;
+    load();
+  }
+}
+
+async function showVote(voteId) {
+  const speciesMap = await loadSpeciesMap();
+
+  const res = await fetch(`http://localhost:8001/votes/${voteId}`);
+
+  if (!res.ok) {
+    alert("Nie udało się pobrać głosowania");
+    return;
+  }
+
+  const data = await res.json();
+
+  document.getElementById("lizards").innerHTML = `
+    <h2>${data.title}</h2>
+
+    ${data.candidates.map(c => {
+      const species = speciesMap[c.species_id];
+
+      return `
+        <div style="margin:10px; padding:10px; border:1px solid #ccc;">
+          <p>${species ? species.common_name : "Nieznany gatunek"}</p>
+          <p>Głosy: ${c.votes_count}</p>
+
+          <button onclick="vote('${c.id}')">
+            Głosuj
+          </button>
+        </div>
+      `;
+    }).join("")}
+  `;
+}
+
+async function vote(candidateId) {
+  const res = await fetch(
+    `http://localhost:8001/votes/${candidateId}/vote`,
+    {
+      method: "POST"
+    }
+  );
+
+  if (!res.ok) {
+    alert("Nie udało się oddać głosu");
+    return;
+  }
+
+  alert("Głos zapisany!");
+
+  // odśwież widok (musisz znać voteId — najprościej reload)
+  location.reload();
+}
+
+async function loadSpeciesMap() {
+  const res = await fetch("http://localhost:8001/species");
+  const data = await res.json();
+
+  return Object.fromEntries(
+    data.map(s => [s.id, s])
+  );
+}
+
+window.showVote = showVote;
+window.vote = vote;
+window.load = load;
+
+load();
+</script>
 </body>
 </html>

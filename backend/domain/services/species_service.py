@@ -39,3 +39,6 @@ class SpeciesService:
         result = self.uow.species.delete_species(species_id)
         self.uow.commit()
         return result
+
+    def get_species_paginated(self, skip: int, limit: int):
+        return self.uow.species.get_species_paginated(skip, limit)

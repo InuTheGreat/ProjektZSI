@@ -45,6 +45,43 @@ class SpeciesRepository:
 
         return True
 
+    def update_species(self, species_id: str, species_data):
+
+        species_model = (
+            self.db_session.query(SpeciesModel)
+            .filter(SpeciesModel.id == species_id)
+            .first()
+        )
+
+        if species_model is None:
+            return None
+
+        species_model.common_name = species_data.common_name
+        species_model.scientific_name = species_data.scientific_name
+        species_model.family = species_data.family
+        species_model.genus = species_data.genus
+        species_model.distribution = species_data.distribution
+        species_model.habitat = species_data.habitat
+        species_model.max_length_cm = species_data.max_length_cm
+        species_model.max_weight_g = species_data.max_weight_g
+        species_model.diet = species_data.diet
+
+        self.db_session.flush()
+
+        return SpeciesMapper.to_domain(species_model)
+    
+    def get_species_paginated(self, skip: int, limit: int):
+        query = self.db_session.query(SpeciesModel)
+
+        species_models = query.offset(skip).limit(limit).all()
+
+        return [
+            SpeciesMapper.to_domain(s)
+            for s in species_models
+        ]
+
+
+
 
 
    
