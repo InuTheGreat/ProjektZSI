@@ -62,7 +62,7 @@ async function load() {
 
   try {
     const res = await fetch(
-      `http://localhost:8001/species?page=${currentPage}&limit=${limit}`
+      `/species?page=${currentPage}&limit=${limit}`
     );
 
     const species = await res.json();
@@ -178,7 +178,7 @@ if (!body.common_name || !body.scientific_name) {
 }
 
   const res = await fetch(
-    'http://localhost:8001/species',
+    '/species',
     {
       method: 'POST',
       headers: {
@@ -200,7 +200,7 @@ if (!body.common_name || !body.scientific_name) {
 
 async function showDetails(id) {
   try {
-    const res = await fetch(`http://localhost:8001/species/${id}`);
+    const res = await fetch(`/species/${id}`);
 
     if (!res.ok) {
       document.getElementById('species-count').innerText = '';
@@ -247,7 +247,7 @@ async function showDetails(id) {
 async function showEditForm(id) {
 
   const res = await fetch(
-    `http://localhost:8001/species/${id}`
+    `/species/${id}`
   );
 
   const s = await res.json();
@@ -338,7 +338,7 @@ async function saveSpecies(id) {
     };
 
   const res = await fetch(
-    `http://localhost:8001/species/${id}`,
+    `/species/${id}`,
     {
       method: 'PUT',
       headers: {
@@ -370,7 +370,7 @@ async function deleteSpecies(id) {
 
   try {
     const res = await fetch(
-      `http://localhost:8001/species/${id}`,
+      `/species/${id}`,
       {
         method: 'DELETE'
       }
@@ -413,7 +413,7 @@ function prevPage() {
 async function showVote(voteId) {
   const speciesMap = await loadSpeciesMap();
 
-  const res = await fetch(`http://localhost:8001/votes/${voteId}`);
+  const res = await fetch(`/votes/${voteId}`);
 
   if (!res.ok) {
     alert("Nie udało się pobrać głosowania");
@@ -444,7 +444,7 @@ async function showVote(voteId) {
 
 async function vote(candidateId) {
   const res = await fetch(
-    `http://localhost:8001/votes/${candidateId}/vote`,
+    `/votes/${candidateId}/vote`,
     {
       method: "POST"
     }
@@ -462,7 +462,7 @@ async function vote(candidateId) {
 }
 
 async function loadSpeciesMap() {
-  const res = await fetch("http://localhost:8001/species");
+  const res = await fetch("/species");
   const data = await res.json();
 
   return Object.fromEntries(
