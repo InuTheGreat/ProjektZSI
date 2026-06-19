@@ -1,6 +1,6 @@
 # Struktura projektu
  
-## Stack
+## Stos Technologiczny
 - Python 3.14
 - FastAPI
 - SQLAlchemy (ORM)
@@ -12,24 +12,16 @@ Projekt oparty o Domain-Driven Design (DDD) z podziałem na trzy warstwy: `appli
 ---
  
 ## Drzewo plików
- 
+
 ```
 /
 ├── backend/
 │   ├── __pycache__/
-│   │   ├── __init__.cpython-314.pyc
-│   │   └── main.cpython-314.pyc
 │   ├── application/
 │   │   ├── api/
 │   │   │   ├── __pycache__/
-│   │   │   │   ├── __init__.cpython-314.pyc
-│   │   │   │   └── dependencies.cpython-314.pyc
 │   │   │   ├── routers/
 │   │   │   │   ├── __pycache__/
-│   │   │   │   │   ├── __init__.cpython-314.pyc
-│   │   │   │   │   ├── lizard_router.cpython-314.pyc
-│   │   │   │   │   ├── lizard_vote_router.cpython-314.pyc
-│   │   │   │   │   └── species_router.cpython-314.pyc
 │   │   │   │   ├── __init__.py
 │   │   │   │   ├── lizard_router.py
 │   │   │   │   ├── lizard_vote_router.py
@@ -38,13 +30,6 @@ Projekt oparty o Domain-Driven Design (DDD) z podziałem na trzy warstwy: `appli
 │   │   │   └── dependencies.py
 │   │   └── schemas/
 │   │       ├── __pycache__/
-│   │       │   ├── __init__.cpython-314.pyc
-│   │       │   ├── lizard.cpython-314.pyc
-│   │       │   ├── lizard_response.cpython-314.pyc
-│   │       │   ├── lizard_vote.cpython-314.pyc
-│   │       │   ├── lizard_vote_response.cpython-314.pyc
-│   │       │   ├── species.cpython-314.pyc
-│   │       │   └── species_response.cpython-314.pyc
 │   │       ├── __init__.py
 │   │       ├── lizard.py
 │   │       ├── lizard_response.py
@@ -55,10 +40,6 @@ Projekt oparty o Domain-Driven Design (DDD) z podziałem na trzy warstwy: `appli
 │   ├── domain/
 │   │   ├── entities/
 │   │   │   ├── __pycache__/
-│   │   │   │   ├── lizard.cpython-314.pyc
-│   │   │   │   ├── lizard_vote.cpython-314.pyc
-│   │   │   │   ├── lizard_vote_candidate.cpython-314.pyc
-│   │   │   │   └── species.cpython-314.pyc
 │   │   │   ├── __init__.py
 │   │   │   ├── lizard.py
 │   │   │   ├── lizard_vote.py
@@ -66,17 +47,11 @@ Projekt oparty o Domain-Driven Design (DDD) z podziałem na trzy warstwy: `appli
 │   │   │   └── species.py
 │   │   ├── exceptions/
 │   │   │   ├── __pycache__/
-│   │   │   │   ├── __init__.cpython-314.pyc
-│   │   │   │   └── custom_exceptions.cpython-314.pyc
 │   │   │   ├── __init__.py
 │   │   │   ├── custom_exceptions.py
 │   │   │   └── global_handler_exceptions.py
 │   │   └── services/
 │   │       ├── __pycache__/
-│   │       │   ├── __init__.cpython-314.pyc
-│   │       │   ├── lizard_service.cpython-314.pyc
-│   │       │   ├── lizard_vote_service.cpython-314.pyc
-│   │       │   └── species_service.cpython-314.pyc
 │   │       ├── __init__.py
 │   │       ├── lizard_service.py
 │   │       ├── lizard_vote_service.py
@@ -84,8 +59,6 @@ Projekt oparty o Domain-Driven Design (DDD) z podziałem na trzy warstwy: `appli
 │   ├── infrastructure/
 │   │   ├── core/
 │   │   │   ├── __pycache__/
-│   │   │   │   ├── __init__.cpython-314.pyc
-│   │   │   │   └── db.cpython-314.pyc
 │   │   │   ├── __init__.py
 │   │   │   └── db.py
 │   │   ├── mappers/
