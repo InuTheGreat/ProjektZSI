@@ -15,7 +15,8 @@ class LizardVoteRepository:
     def __init__(self, db_session):
         self.db_session = db_session
 
-    def create_vote(self, vote_model: LizardVoteModel) -> None:
+    def create_vote(self, vote_id:str, title: str ) -> None:
+        vote_model= LizardVoteModel(id=vote_id, title=title)
         self.db_session.add(vote_model)
         self.db_session.flush()
 
@@ -26,7 +27,13 @@ class LizardVoteRepository:
         return LizardVoteMapper.to_entity(model)
 
 
-    def add_candidate(self, candidate_model: LizardVoteCandidateModel) -> None:
+    def add_candidate(self, candidate_id: str, vote_id: str, spiecies_id:str) -> None:
+        candidate_model= LizardVoteCandidateModel(
+            id=candidate_id,
+            vote_id=vote_id,
+            spiecies_id=spiecies_id,
+            votes_count=0
+        )
         self.db_session.add(candidate_model)
         self.db_session.flush()
 
