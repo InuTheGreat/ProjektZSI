@@ -21,7 +21,7 @@ def create_vote(
     try:
         vote_id = service.create_vote(
             title=request.title,
-            lizard_ids=request.lizard_ids,
+            species_ids=request.lizard_ids,
         )
 
         uow.commit()
