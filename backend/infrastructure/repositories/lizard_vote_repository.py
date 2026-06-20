@@ -1,8 +1,6 @@
 from sqlalchemy.orm import Session
-
 from backend.infrastructure.orm.lizard_vote_model import LizardVoteModel
 from backend.infrastructure.orm.lizard_vote_candidate_model import LizardVoteCandidateModel
-
 from backend.infrastructure.mappers.lizard_vote_mapper import LizardVoteMapper
 from backend.infrastructure.mappers.lizard_vote_candidate_mapper import (
     LizardVoteCandidateMapper,
@@ -31,7 +29,7 @@ class LizardVoteRepository:
         candidate_model= LizardVoteCandidateModel(
             id=candidate_id,
             vote_id=vote_id,
-            spiecies_id=spiecies_id,
+            species_id=species_id,
             votes_count=0
         )
         self.db_session.add(candidate_model)
