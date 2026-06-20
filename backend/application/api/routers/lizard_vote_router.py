@@ -64,7 +64,7 @@ def get_vote(
             candidates=[
                 LizardVoteCandidateResponse(
                     id=c.id,
-                    lizard_id=c.lizard_id,
+                    species_id=c.species_id,
                     votes_count=c.votes_count,
                 )
                 for c in result["candidates"]
