@@ -1,8 +1,6 @@
 from backend.infrastructure.core.db import SessionLocal
-
 from backend.infrastructure.repositories.lizard_repositories import LizardRepository
 from backend.domain.services.lizard_service import LizardService
-
 from backend.application.schemas.lizard import LizardCreateRequest
 
 

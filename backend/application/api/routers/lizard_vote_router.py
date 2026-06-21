@@ -21,7 +21,7 @@ def create_vote(
     try:
         vote_id = service.create_vote(
             title=request.title,
-            lizard_ids=request.lizard_ids,
+            species_ids=request.lizard_ids,
         )
 
         uow.commit()
@@ -64,7 +64,7 @@ def get_vote(
             candidates=[
                 LizardVoteCandidateResponse(
                     id=c.id,
-                    lizard_id=c.lizard_id,
+                    species_id=c.species_id,
                     votes_count=c.votes_count,
                 )
                 for c in result["candidates"]
