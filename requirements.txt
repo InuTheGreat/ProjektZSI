@@ -4,3 +4,7 @@ uvicorn[standard]
 sqlalchemy
 python-dotenv
 redis
+bcrypt==4.0.1
+passlib[bcrypt]
+python-jose[cryptography]
+email-validator
