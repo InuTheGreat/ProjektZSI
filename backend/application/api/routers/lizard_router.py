@@ -45,3 +45,12 @@ def search_lizards(
     service = LizardService(uow)
 
     return service.find_lizards_by_phrase(phrase)
+
+@router.delete("/{lizard_id}", status_code=204)
+def delete_lizard(lizard_id: str, uow=Depends(get_uow)):
+    service = LizardService(uow)
+
+    try:
+        service.delete_lizard(lizard_id)
+    except NotFoundError as e:
+        raise HTTPException(status_code=404, detail=str(e))
