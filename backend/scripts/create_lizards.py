@@ -1,14 +1,11 @@
-from backend.infrastructure.core.db import SessionLocal
-from backend.infrastructure.repositories.lizard_repositories import LizardRepository
+from backend.infrastructure.uow.unit_of_work import UnitOfWork
 from backend.domain.services.lizard_service import LizardService
 from backend.application.schemas.lizard import LizardCreateRequest
 
 
 def main():
-    db = SessionLocal()
-
-    repo = LizardRepository(db)
-    service = LizardService(repo)
+    uow = UnitOfWork()
+    service = LizardService(uow)
 
     print("Tworzę lizard...")
 
@@ -23,7 +20,7 @@ def main():
     print("UTWORZONO:")
     print(created)
 
-    db.close()
+    uow.close()
 
 
 if __name__ == "__main__":

@@ -1,5 +1,5 @@
 from backend.utils.uuid import generate_uuid
-
+from backend.domain.exceptions.custom_exceptions import NotFoundError
 
 
 class LizardVoteService:
@@ -29,6 +29,8 @@ class LizardVoteService:
 
     def get_results(self, vote_id: str):
         vote = self.uow.lizard_votes.get_vote(vote_id)
+        if not vote:
+            raise NotFoundError(f"Vote {vote_id} not found")
         candidates = self.uow.lizard_votes.get_candidates(vote_id)
 
         return {

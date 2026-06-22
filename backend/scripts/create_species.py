@@ -1,17 +1,11 @@
-from backend.infrastructure.core.db import SessionLocal
-
-from backend.infrastructure.repositories.species_repositories import SpeciesRepository
+from backend.infrastructure.uow.unit_of_work import UnitOfWork
 from backend.domain.services.species_service import SpeciesService
-
-from backend.domain.entities.species import Species
 from backend.application.schemas.species import SpeciesCreateRequest
 
 
 def main():
-    db = SessionLocal()
-
-    repo = SpeciesRepository(db)
-    service = SpeciesService(repo)
+    uow = UnitOfWork()
+    service = SpeciesService(uow)
 
     print("Tworzę species...")
 
@@ -32,7 +26,7 @@ def main():
     print("UTWORZONO:")
     print(created)
 
-    db.close()
+    uow.close()
 
 
 if __name__ == "__main__":
