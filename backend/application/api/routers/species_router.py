@@ -69,7 +69,6 @@ def update_species(
         )
     
 @router.delete("/{species_id}", status_code=204)
-    
 def delete_species(
     species_id: str,
     uow=Depends(get_uow)
