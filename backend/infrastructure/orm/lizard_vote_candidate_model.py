@@ -21,7 +21,7 @@ class LizardVoteCandidateModel(Base):
 
     species_id = Column(
         String(36),
-        ForeignKey("species.id"),
+        ForeignKey("species.id", ondelete="CASCADE"),
         nullable=False,
     )
 
