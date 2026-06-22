@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.security import HTTPBearer
-
+from backend.domain.exceptions.custom_exceptions import NotFoundError
 from backend.application.api.dependencies import get_uow
 from backend.application.schemas.account import AccountCreateRequest
 from backend.application.schemas.login import LoginRequest
@@ -49,7 +49,7 @@ def login(
 
     try:
         return service.login(request)
-    except ValueError:
+    except NotFoundError:
         raise HTTPException(
             status_code=401,
             detail="Invalid credentials",
