@@ -42,3 +42,8 @@ class SpeciesService:
 
     def get_species_paginated(self, skip: int, limit: int):
         return self.uow.species.get_species_paginated(skip, limit)
+
+    def vote(self, species_id: str) -> None:
+        success = self.uow.species.increment_vote(species_id)
+        if not success:
+            raise NotFoundError("Species not found")

@@ -22,4 +22,6 @@ class SpeciesMapper:
             max_weight_g=model.max_weight_g,
 
             diet=model.diet,
+            votes_count=model.votes_count,  
+
         )
