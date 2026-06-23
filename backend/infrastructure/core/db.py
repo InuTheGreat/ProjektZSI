@@ -4,8 +4,6 @@ from backend.infrastructure.orm.base import Base
 
 from backend.infrastructure.orm.lizard_model import LizardModel
 from backend.infrastructure.orm.species_model import SpeciesModel
-from backend.infrastructure.orm.lizard_vote_model import LizardVoteModel
-from backend.infrastructure.orm.lizard_vote_candidate_model import LizardVoteCandidateModel
 from backend.infrastructure.orm.account_model import AccountModel
 
 from sqlalchemy import create_engine
