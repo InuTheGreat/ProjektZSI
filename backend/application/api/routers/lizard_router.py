@@ -16,7 +16,16 @@ def get_lizards(uow=Depends(get_uow)):
         return service.get_lizards()
     except NotFoundError as e:
         raise HTTPException(status_code=404, detail=str(e))
-    
+
+@router.get("/search", response_model=list[LizardResponse])
+def search_lizards(
+    phrase: str,
+    uow=Depends(get_uow)
+):
+    service = LizardService(uow)
+
+    return service.find_lizards_by_phrase(phrase)
+
 @router.get("/{lizard_id}", response_model=LizardResponse)
 def get_lizard(lizard_id: str, uow=Depends(get_uow)):
     service = LizardService(uow)
@@ -25,7 +34,7 @@ def get_lizard(lizard_id: str, uow=Depends(get_uow)):
         return service.get_lizard_by_id(lizard_id)
     except NotFoundError as e:
         raise HTTPException(status_code=404, detail=str(e))
-    
+
 @router.post("", response_model=LizardResponse, status_code=201)
 def create_lizard(
     request: LizardCreateRequest,
@@ -37,11 +46,11 @@ def create_lizard(
 
     return lizard
 
-@router.get("/search")
-def search_lizards(
-    phrase: str,
-    uow=Depends(get_uow)
-):
+@router.delete("/{lizard_id}", status_code=204)
+def delete_lizard(lizard_id: str, uow=Depends(get_uow)):
     service = LizardService(uow)
 
-    return service.find_lizards_by_phrase(phrase)
+    try:
+        service.delete_lizard(lizard_id)
+    except NotFoundError as e:
+        raise HTTPException(status_code=404, detail=str(e))

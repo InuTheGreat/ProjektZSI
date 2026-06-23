@@ -35,9 +35,6 @@
   <button onclick="load()">Pokaż wszystkie</button>
   <button onclick="showAddForm()">Dodaj gatunek</button>
   <button onclick="sortSpecies()">Sortuj A-Z</button>
-  <button onclick="showVote('307d9ba0-7587-4f76-8a75-2f71c4cfeff5')">
-  Otwórz głosowanie
-  </button>
 </div>
 
   <p id="species-count"></p>
@@ -83,19 +80,12 @@ async function load() {
 
 function renderSpecies(species) {
   document.getElementById('lizards').innerHTML = species.map(s => `
-    <div style="
-  margin:15px auto;
-  padding:20px;
-  border:1px solid #ddd;
-  border-radius:12px;
-  max-width:500px;
-  box-shadow:0 2px 8px rgba(0,0,0,0.1);
-">
+    <div style="margin:15px auto; padding:20px; border:1px solid #ddd; border-radius:12px; max-width:500px; box-shadow:0 2px 8px rgba(0,0,0,0.1);">
       <h3>${s.common_name}</h3>
       <p><i>${s.scientific_name}</i></p>
-      <button onclick="showDetails('${s.id}')">
-        Szczegóły
-      </button>
+      <p>Głosy: ${s.votes_count}</p>
+      <button onclick="voteSpecies('${s.id}')">Głosuj</button>
+      <button onclick="showDetails('${s.id}')">Szczegóły</button>
     </div>
   `).join('');
 }
@@ -410,68 +400,20 @@ function prevPage() {
   }
 }
 
-async function showVote(voteId) {
-  const speciesMap = await loadSpeciesMap();
+async function voteSpecies(speciesId) {
+  const scrollY = window.scrollY;
 
-  const res = await fetch(`/votes/${voteId}`);
+  const res = await fetch(`/species/${speciesId}/vote`, { method: 'POST' });
 
   if (!res.ok) {
-    alert("Nie udało się pobrać głosowania");
+    alert('Nie udało się oddać głosu');
     return;
   }
 
-  const data = await res.json();
-
-  document.getElementById("lizards").innerHTML = `
-    <h2>${data.title}</h2>
-
-    ${data.candidates.map(c => {
-      const species = speciesMap[c.species_id];
-
-      return `
-        <div style="margin:10px; padding:10px; border:1px solid #ccc;">
-          <p>${species ? species.common_name : "Nieznany gatunek"}</p>
-          <p>Głosy: ${c.votes_count}</p>
-
-          <button onclick="vote('${c.id}')">
-            Głosuj
-          </button>
-        </div>
-      `;
-    }).join("")}
-  `;
+  await load();
+  window.scrollTo(0, scrollY);
 }
 
-async function vote(candidateId) {
-  const res = await fetch(
-    `/votes/${candidateId}/vote`,
-    {
-      method: "POST"
-    }
-  );
-
-  if (!res.ok) {
-    alert("Nie udało się oddać głosu");
-    return;
-  }
-
-  alert("Głos zapisany!");
-
-  // odśwież widok (musisz znać voteId — najprościej reload)
-  location.reload();
-}
-
-async function loadSpeciesMap() {
-  const res = await fetch("/species");
-  const data = await res.json();
-
-  return Object.fromEntries(
-    data.map(s => [s.id, s])
-  );
-}
-
-window.showVote = showVote;
-window.vote = vote;
 window.load = load;
 
 load();

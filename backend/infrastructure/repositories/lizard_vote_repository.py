@@ -4,6 +4,7 @@ from backend.infrastructure.mappers.lizard_vote_mapper import LizardVoteMapper
 from backend.infrastructure.mappers.lizard_vote_candidate_mapper import (
     LizardVoteCandidateMapper,
 )
+from backend.domain.exceptions.custom_exceptions import NotFoundError
 
 from sqlalchemy.orm import joinedload
 
@@ -54,7 +55,7 @@ class LizardVoteRepository:
         )
 
         if not candidate:
-            return
+            raise NotFoundError(f"Candidate {candidate_id} not found")
 
         candidate.votes_count += 1
         self.db_session.flush()

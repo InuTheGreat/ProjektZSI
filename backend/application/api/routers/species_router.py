@@ -69,7 +69,6 @@ def update_species(
         )
     
 @router.delete("/{species_id}", status_code=204)
-    
 def delete_species(
     species_id: str,
     uow=Depends(get_uow)
@@ -84,3 +83,13 @@ def delete_species(
             status_code=404,
             detail=str(e)
         )
+
+@router.post("/{species_id}/vote", status_code=200)
+def vote_species(species_id: str, uow=Depends(get_uow)):
+    service = SpeciesService(uow)
+    try:
+        service.vote(species_id)
+        uow.commit()
+        return {"status": "ok"}
+    except NotFoundError as e:
+        raise HTTPException(status_code=404, detail=str(e))
