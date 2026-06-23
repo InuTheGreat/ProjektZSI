@@ -80,8 +80,17 @@ class SpeciesRepository:
             for s in species_models
         ]
 
+    def increment_vote(self, species_id: str) -> bool:
+        species_model = (
+            self.db_session.query(SpeciesModel)
+            .filter(SpeciesModel.id == species_id)
+            .first()
+        )
+        if species_model is None:
+            return False
+
+        species_model.votes_count += 1
+        self.db_session.flush()
+        return True
 
 
-
-
-   

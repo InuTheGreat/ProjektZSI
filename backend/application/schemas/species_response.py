@@ -13,3 +13,4 @@ class SpeciesResponse(BaseModel):
     max_length_cm: str | None = None
     max_weight_g: str | None = None
     diet: str | None = None
+    votes_count: int = 0
