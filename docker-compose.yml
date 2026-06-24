@@ -8,9 +8,12 @@ services:
       DB_USER: ${DB_USER}
       DB_PASS: ${DB_PASS}
       DB_NAME: ${DB_NAME}
+      REDIS_HOST: redis
     depends_on:
       mysql:
         condition: service_healthy
+      redis:
+        condition: service_started
 
   mysql:
     image: mysql:8.0.46 
@@ -43,7 +46,7 @@ services:
   redis:
     image: redis:alpine
     ports:
-    - "6379:6379"
+      - "6379:6379"
 
 volumes:
   db_data:

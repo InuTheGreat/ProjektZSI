@@ -1,10 +1,11 @@
 from fastapi import APIRouter, Depends, HTTPException
-
-from backend.application.api.dependencies import get_uow
+from backend.application.api.dependencies import get_uow, get_redis
 from backend.domain.services.species_service import SpeciesService
 from backend.application.schemas.species import SpeciesCreateRequest
 from backend.application.schemas.species_response import SpeciesResponse
-from backend.domain.exceptions.custom_exceptions import NotFoundError
+from backend.domain.exceptions.custom_exceptions import NotFoundError, AlreadyVotedError
+from backend.auth.auth_dependency import get_optional_account_id
+
 
 router = APIRouter(prefix="/species", tags=["Species"])
 
