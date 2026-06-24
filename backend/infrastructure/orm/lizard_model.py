@@ -1,12 +1,7 @@
-
-import uuid
-
 from backend.utils.uuid import generate_uuid
 from sqlalchemy import DateTime
 from sqlalchemy import Column, ForeignKey, Integer, String, func
-from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
-
 from backend.infrastructure.orm.base import Base
 
 class LizardModel(Base):

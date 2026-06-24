@@ -21,13 +21,6 @@ def get_species(
 
     return service.get_species_paginated(skip, limit)
 
-    service = SpeciesService(uow)
-
-    try:
-        return service.get_species()
-
-    except NotFoundError as e:
-        raise HTTPException(status_code=404, detail=str(e))
     
 @router.get("/{species_id}", response_model=SpeciesResponse)
 def get_species_by_id(species_id: str, uow=Depends(get_uow)):
