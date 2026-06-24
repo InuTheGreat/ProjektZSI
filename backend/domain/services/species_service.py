@@ -50,7 +50,7 @@ class SpeciesService:
         )
 
         if has_already_voted(redis_client, species_id, voter_id):
-            raise AlreadyVotedError("You have already voted for this species today")
+            raise AlreadyVotedError("Już dzisiaj głosowałeś na tę jaszczurkę")
 
         success = self.uow.species.increment_vote(species_id)
         if not success:
