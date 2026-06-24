@@ -12,3 +12,6 @@ class DuplicatedError(DomainError):
 
 class DatabaseError(DomainError):
     pass
+
+class AlreadyVotedError(DomainError):
+    pass

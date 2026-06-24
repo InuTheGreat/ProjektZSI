@@ -9,6 +9,9 @@ from backend.infrastructure.orm.account_model import (
     AccountModel,
 )
 
+from backend.domain.exceptions.custom_exceptions import (
+    NotFoundError,
+)
 
 class AccountService:
 
@@ -43,3 +46,12 @@ class AccountService:
         self.uow.commit()
 
         return account
+    
+    def update_role(self, account_id: str, new_role: str):
+        account = self.uow.accounts.get_account_by_id(account_id)
+        if not account:
+            raise NotFoundError("Account not found")
+
+        updated = self.uow.accounts.update_role(account_id, new_role)
+        self.uow.commit()
+        return updated

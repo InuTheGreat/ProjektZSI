@@ -1,10 +1,10 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Request
 from backend.application.api.dependencies import get_uow, get_redis
 from backend.domain.services.species_service import SpeciesService
 from backend.application.schemas.species import SpeciesCreateRequest
 from backend.application.schemas.species_response import SpeciesResponse
 from backend.domain.exceptions.custom_exceptions import NotFoundError, AlreadyVotedError
-from backend.auth.auth_dependency import get_optional_account_id
+from backend.auth.auth_dependency import get_optional_account_id, require_admin
 
 
 router = APIRouter(prefix="/species", tags=["Species"])
@@ -21,13 +21,6 @@ def get_species(
 
     return service.get_species_paginated(skip, limit)
 
-    service = SpeciesService(uow)
-
-    try:
-        return service.get_species()
-
-    except NotFoundError as e:
-        raise HTTPException(status_code=404, detail=str(e))
     
 @router.get("/{species_id}", response_model=SpeciesResponse)
 def get_species_by_id(species_id: str, uow=Depends(get_uow)):
@@ -42,12 +35,12 @@ def get_species_by_id(species_id: str, uow=Depends(get_uow)):
 @router.post("", response_model=SpeciesResponse, status_code=201)
 def create_species(
     request: SpeciesCreateRequest,
-    uow=Depends(get_uow)
+    uow=Depends(get_uow),
+    _admin=Depends(require_admin)
+
 ):
     service = SpeciesService(uow)
-
     species = service.create_species(request)
-
     return species
 
 def update_species(
@@ -72,7 +65,8 @@ def update_species(
 @router.delete("/{species_id}", status_code=204)
 def delete_species(
     species_id: str,
-    uow=Depends(get_uow)
+    uow=Depends(get_uow),
+    _admin=Depends(require_admin)
 ):
     service = SpeciesService(uow)
 
@@ -86,11 +80,21 @@ def delete_species(
         )
 
 @router.post("/{species_id}/vote", status_code=200)
-def vote_species(species_id: str, uow=Depends(get_uow)):
+def vote_species(
+    species_id: str,
+    request: Request,
+    uow=Depends(get_uow),
+    redis_client=Depends(get_redis),
+):
+    account_id = get_optional_account_id(request)
+    voter_id = account_id if account_id else request.client.host
+
     service = SpeciesService(uow)
     try:
-        service.vote(species_id)
+        service.vote(species_id, voter_id, redis_client)
         uow.commit()
         return {"status": "ok"}
     except NotFoundError as e:
         raise HTTPException(status_code=404, detail=str(e))
+    except AlreadyVotedError as e:
+        raise HTTPException(status_code=429, detail=str(e))
