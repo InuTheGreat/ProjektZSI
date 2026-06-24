@@ -60,3 +60,10 @@ def get_optional_account_id(request: Request) -> str | None:
     except JWTError:
         return None
 
+def require_admin(payload: dict = Depends(authorize)) -> dict:
+    if payload.get("role") != "ADMINISTRATOR":
+        raise HTTPException(
+            status_code=403,
+            detail="Administrator access required",
+        )
+    return payload

@@ -4,7 +4,7 @@ from backend.domain.services.species_service import SpeciesService
 from backend.application.schemas.species import SpeciesCreateRequest
 from backend.application.schemas.species_response import SpeciesResponse
 from backend.domain.exceptions.custom_exceptions import NotFoundError, AlreadyVotedError
-from backend.auth.auth_dependency import get_optional_account_id
+from backend.auth.auth_dependency import get_optional_account_id, require_admin
 
 
 router = APIRouter(prefix="/species", tags=["Species"])
@@ -35,12 +35,12 @@ def get_species_by_id(species_id: str, uow=Depends(get_uow)):
 @router.post("", response_model=SpeciesResponse, status_code=201)
 def create_species(
     request: SpeciesCreateRequest,
-    uow=Depends(get_uow)
+    uow=Depends(get_uow),
+    _admin=Depends(require_admin)
+
 ):
     service = SpeciesService(uow)
-
     species = service.create_species(request)
-
     return species
 
 def update_species(
@@ -65,7 +65,8 @@ def update_species(
 @router.delete("/{species_id}", status_code=204)
 def delete_species(
     species_id: str,
-    uow=Depends(get_uow)
+    uow=Depends(get_uow),
+    _admin=Depends(require_admin)
 ):
     service = SpeciesService(uow)
 
