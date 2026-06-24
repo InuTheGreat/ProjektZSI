@@ -405,6 +405,12 @@ async function voteSpecies(speciesId) {
 
   const res = await fetch(`/species/${speciesId}/vote`, { method: 'POST' });
 
+  if (res.status === 429) {
+    const error = await res.json();
+    alert(error.detail || 'Już zagłosowałeś na ten gatunek dzisiaj');
+    return;
+  }
+
   if (!res.ok) {
     alert('Nie udało się oddać głosu');
     return;
