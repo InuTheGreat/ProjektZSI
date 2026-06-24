@@ -1,7 +1,7 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
 class LizardCreateRequest(BaseModel):
-    name: str
-    age: int
+    name: str = Field(min_length=1, max_length=50)
+    age: int = Field(gt=0)
     species_id: str

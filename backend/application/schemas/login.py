@@ -4,4 +4,4 @@ from pydantic import EmailStr
 
 class LoginRequest(BaseModel):
     email: EmailStr
-    password: str
+    password: str 
