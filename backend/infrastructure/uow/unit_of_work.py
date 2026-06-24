@@ -1,6 +1,5 @@
 from backend.infrastructure.core.db import SessionLocal
 from backend.infrastructure.repositories.account_repositories import AccountRepository
-from backend.infrastructure.repositories.lizard_repositories import LizardRepository
 from backend.infrastructure.repositories.species_repositories import SpeciesRepository
 
 
@@ -9,7 +8,6 @@ class UnitOfWork:
     def __init__(self):
         self.db = SessionLocal()
 
-        self.lizards = LizardRepository(self.db)
         self.species = SpeciesRepository(self.db)
         self.accounts = AccountRepository(self.db)
 
