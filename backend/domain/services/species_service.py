@@ -1,5 +1,5 @@
 from backend.domain.entities.species import Species
-from backend.domain.exceptions.custom_exceptions import NotFoundError
+from backend.domain.exceptions.custom_exceptions import NotFoundError,AlreadyVotedError
 
 
 class SpeciesService:
@@ -43,7 +43,17 @@ class SpeciesService:
     def get_species_paginated(self, skip: int, limit: int):
         return self.uow.species.get_species_paginated(skip, limit)
 
-    def vote(self, species_id: str) -> None:
+    def vote(self, species_id: str, voter_id: str, redis_client) -> None:
+        from backend.infrastructure.core.vote_rate_limiter import (
+            has_already_voted,
+            register_vote,
+        )
+
+        if has_already_voted(redis_client, species_id, voter_id):
+            raise AlreadyVotedError("You have already voted for this species today")
+
         success = self.uow.species.increment_vote(species_id)
         if not success:
             raise NotFoundError("Species not found")
+
+        register_vote(redis_client, species_id, voter_id)

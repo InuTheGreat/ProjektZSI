@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Request
 from backend.application.api.dependencies import get_uow, get_redis
 from backend.domain.services.species_service import SpeciesService
 from backend.application.schemas.species import SpeciesCreateRequest
@@ -86,11 +86,21 @@ def delete_species(
         )
 
 @router.post("/{species_id}/vote", status_code=200)
-def vote_species(species_id: str, uow=Depends(get_uow)):
+def vote_species(
+    species_id: str,
+    request: Request,
+    uow=Depends(get_uow),
+    redis_client=Depends(get_redis),
+):
+    account_id = get_optional_account_id(request)
+    voter_id = account_id if account_id else request.client.host
+
     service = SpeciesService(uow)
     try:
-        service.vote(species_id)
+        service.vote(species_id, voter_id, redis_client)
         uow.commit()
         return {"status": "ok"}
     except NotFoundError as e:
         raise HTTPException(status_code=404, detail=str(e))
+    except AlreadyVotedError as e:
+        raise HTTPException(status_code=429, detail=str(e))
