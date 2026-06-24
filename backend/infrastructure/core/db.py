@@ -1,6 +1,5 @@
 from sqlalchemy.orm import sessionmaker
 from backend.infrastructure.orm.base import Base
-from backend.infrastructure.orm.lizard_model import LizardModel
 from backend.infrastructure.orm.species_model import SpeciesModel
 from backend.infrastructure.orm.account_model import AccountModel
 

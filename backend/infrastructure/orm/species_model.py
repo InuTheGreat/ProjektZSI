@@ -5,7 +5,6 @@ from sqlalchemy import DateTime, Integer
 from sqlalchemy import UUID, Column, String, Text, func
 from backend.infrastructure.orm.base import Base
 from sqlalchemy import Column, String
-from sqlalchemy.orm import relationship
 
 class SpeciesModel(Base):
     __tablename__ = "species"
@@ -35,5 +34,3 @@ class SpeciesModel(Base):
         nullable=False,
     )
 
-
-    lizards = relationship("LizardModel", back_populates="species")
