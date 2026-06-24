@@ -58,3 +58,16 @@ class AccountRepository:
         return AccountMapper.to_domain(
             account_model
         )
+    
+    def update_role(self, account_id: str, new_role: str):
+        account_model = (
+                self.db_session.query(AccountModel)
+                .filter(AccountModel.id == account_id)
+            .first()
+        )
+        if account_model is None:
+            return None
+
+        account_model.role = new_role
+        self.db_session.flush()
+        return AccountMapper.to_domain(account_model)
